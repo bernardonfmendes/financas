@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { formatEUR } from '../../lib/money'
 import { useAccounts } from '../accounts/useAccounts'
+import { BudgetAlerts } from '../budgets/BudgetAlerts'
 import { useAuth } from '../auth/AuthProvider'
 
 export function HomeScreen() {
@@ -73,6 +74,7 @@ export function HomeScreen() {
           </p>
         )}
       </div>
+      <BudgetAlerts />
     </section>
   )
 }
