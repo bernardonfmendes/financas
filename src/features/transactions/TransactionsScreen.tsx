@@ -77,14 +77,26 @@ function amountText(transaction: Transaction): string {
   return value
 }
 
-export function TransactionsScreen() {
+interface TransactionsScreenProps {
+  /** true quando a app foi aberta com ?novo=1 (atalho do iPhone): abre logo o registo rápido. */
+  startInQuickEntry?: boolean
+  /** Chamado uma vez, ao abrir o registo rápido pedido pelo atalho. */
+  onQuickEntryStarted?: () => void
+}
+
+export function TransactionsScreen({
+  startInQuickEntry = false,
+  onQuickEntryStarted,
+}: TransactionsScreenProps) {
   const { accounts, loading: accountsLoading, error: accountsError } = useAccounts()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [period, setPeriod] = useState<Period>('mes')
-  const [view, setView] = useState<View>({ mode: 'lista' })
+  const [view, setView] = useState<View>(
+    startInQuickEntry ? { mode: 'rapido' } : { mode: 'lista' },
+  )
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -107,6 +119,11 @@ export function TransactionsScreen() {
   useEffect(() => {
     void load()
   }, [load])
+
+  useEffect(() => {
+    if (startInQuickEntry) onQuickEntryStarted?.()
+    // Só na montagem: o pedido do atalho é consumido uma única vez.
+  }, [])
 
   const accountNames = useMemo(
     () => new Map<string, string>(accounts.map((account): [string, string] => [account.id, account.name])),
@@ -165,6 +182,10 @@ export function TransactionsScreen() {
   }
 
   if (view.mode === 'rapido') {
+    if (loading || accountsLoading) {
+      return <p className="text-sm text-slate-500 dark:text-slate-400">A carregar…</p>
+    }
+
     return (
       <QuickEntry
         accounts={accounts}

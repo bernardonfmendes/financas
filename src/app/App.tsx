@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BottomNav } from './BottomNav'
 import { TABS, type TabId } from './navigation'
 import { AuthProvider, useAuth } from '../features/auth/AuthProvider'
@@ -7,9 +7,27 @@ import { AccountsScreen } from '../features/accounts/AccountsScreen'
 import { HomeScreen } from '../features/dashboard/HomeScreen'
 import { TransactionsScreen } from '../features/transactions/TransactionsScreen'
 
+/** Lê ?novo=1 (usado pelo atalho do iPhone) uma única vez, ao abrir a app. */
+function wantsQuickEntry(): boolean {
+  try {
+    return new URLSearchParams(window.location.search).get('novo') === '1'
+  } catch {
+    return false
+  }
+}
+
 function AppContent() {
   const { user, loading } = useAuth()
-  const [active, setActive] = useState<TabId>('inicio')
+  const [quickEntryPending, setQuickEntryPending] = useState(wantsQuickEntry)
+  const [active, setActive] = useState<TabId>(quickEntryPending ? 'movimentos' : 'inicio')
+
+  useEffect(() => {
+    try {
+      window.history.replaceState(null, '', window.location.pathname)
+    } catch {
+      // Sem histórico disponível: a app continua a funcionar normalmente.
+    }
+  }, [])
   const readyTabs = TABS.filter((tab) => tab.ready)
 
   if (loading) {
@@ -30,7 +48,12 @@ function AppContent() {
     <div className="min-h-dvh bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <main className="mx-auto max-w-md px-5 pb-28 pt-12">
         {active === 'inicio' && <HomeScreen />}
-        {active === 'movimentos' && <TransactionsScreen />}
+        {active === 'movimentos' && (
+          <TransactionsScreen
+            startInQuickEntry={quickEntryPending}
+            onQuickEntryStarted={() => setQuickEntryPending(false)}
+          />
+        )}
         {active === 'contas' && <AccountsScreen />}
       </main>
       <BottomNav tabs={readyTabs} active={active} onSelect={setActive} />
