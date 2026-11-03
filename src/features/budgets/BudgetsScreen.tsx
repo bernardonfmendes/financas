@@ -112,6 +112,27 @@ export function BudgetsScreen() {
     [categories],
   )
 
+  /** Categorias que já atingiram a percentagem de alerta (ou passaram o limite), as mais graves primeiro. */
+  const alerts = useMemo(() => {
+    const list: { id: string; name: string; percent: number; spent: number; limit: number }[] = []
+
+    for (const budget of budgets) {
+      const spent = spentByCategory.get(budget.category_id) ?? 0
+      const percent = Math.round((spent / budget.amount_cents) * 100)
+      if (percent >= budget.alert_percent) {
+        list.push({
+          id: budget.id,
+          name: categoryNames.get(budget.category_id) ?? 'Categoria',
+          percent,
+          spent,
+          limit: budget.amount_cents,
+        })
+      }
+    }
+
+    return list.sort((a, b) => b.percent - a.percent)
+  }, [budgets, spentByCategory, categoryNames])
+
   const totalBudgeted = budgets.reduce((sum, budget) => sum + budget.amount_cents, 0)
   const totalSpent = budgets.reduce((sum, budget) => sum + (spentByCategory.get(budget.category_id) ?? 0), 0)
 
@@ -181,6 +202,26 @@ export function BudgetsScreen() {
         </h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Orçamentos deste mês.</p>
       </header>
+
+      {alerts.length > 0 && (
+        <section aria-label="Alertas de orçamento" className="space-y-2">
+          {alerts.map((alert) => (
+            <p
+              key={alert.id}
+              role="alert"
+              className={`rounded-2xl px-4 py-3 text-sm font-medium ${
+                alert.percent >= 100
+                  ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+                  : 'bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+              }`}
+            >
+              {alert.percent >= 100
+                ? `${alert.name}: orçamento ultrapassado em ${formatEUR(alert.spent - alert.limit)}.`
+                : `${alert.name}: já usaste ${alert.percent}% do orçamento (${formatEUR(alert.limit - alert.spent)} disponíveis).`}
+            </p>
+          ))}
+        </section>
+      )}
 
       <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
         <p className="text-sm text-slate-500 dark:text-slate-400">Gasto de orçamentos definidos</p>
