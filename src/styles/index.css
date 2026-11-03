@@ -3,4 +3,15 @@
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif;
   --color-brand-600: #0f766e;
+  --color-brand-500: #14b8a6;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-sans);
 }
