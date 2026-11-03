@@ -3,6 +3,7 @@ import { formatEUR } from '../../lib/money'
 import { fetchCategories, type Category } from '../accounts/accountsService'
 import { useAccounts } from '../accounts/useAccounts'
 import { QuickEntry } from './QuickEntry'
+import { SwipeableRow } from './SwipeableRow'
 import { TransactionForm } from './TransactionForm'
 import {
   deleteTransaction,
@@ -118,6 +119,15 @@ export function TransactionsScreen({
 
   useEffect(() => {
     void load()
+  }, [load])
+
+  // Quando a app volta ao primeiro plano (ex.: depois do atalho), recarrega os movimentos.
+  useEffect(() => {
+    function reloadWhenVisible() {
+      if (document.visibilityState === 'visible') void load()
+    }
+    document.addEventListener('visibilitychange', reloadWhenVisible)
+    return () => document.removeEventListener('visibilitychange', reloadWhenVisible)
   }, [load])
 
   useEffect(() => {
@@ -339,21 +349,26 @@ export function TransactionsScreen({
 
               return (
                 <li key={transaction.id}>
-                  <button
-                    type="button"
-                    onClick={() => setView({ mode: 'editar', transaction })}
-                    className="flex w-full items-center justify-between gap-4 rounded-2xl bg-white p-4 text-left ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800"
+                  <SwipeableRow
+                    onSwipeLeft={() => void handleDelete(transaction)}
+                    onSwipeRight={() => setView({ mode: 'editar', transaction })}
                   >
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">{transaction.description}</p>
-                      <p className="truncate text-sm text-slate-500 dark:text-slate-400">
-                        {subtitle} · {timeLabel(transaction.occurred_at)}
+                    <button
+                      type="button"
+                      onClick={() => setView({ mode: 'editar', transaction })}
+                      className="flex w-full items-center justify-between gap-4 rounded-2xl bg-white p-4 text-left ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{transaction.description}</p>
+                        <p className="truncate text-sm text-slate-500 dark:text-slate-400">
+                          {subtitle} · {timeLabel(transaction.occurred_at)}
+                        </p>
+                      </div>
+                      <p className={`shrink-0 tabular-nums font-medium ${amountClass(transaction.kind)}`}>
+                        {amountText(transaction)}
                       </p>
-                    </div>
-                    <p className={`shrink-0 tabular-nums font-medium ${amountClass(transaction.kind)}`}>
-                      {amountText(transaction)}
-                    </p>
-                  </button>
+                    </button>
+                  </SwipeableRow>
                 </li>
               )
             })}
