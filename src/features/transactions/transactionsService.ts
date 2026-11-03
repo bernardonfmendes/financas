@@ -17,6 +17,9 @@ export interface Transaction {
   payment_method: PaymentMethod | null
   notes: string | null
   tags: string[]
+  status: 'prevista' | 'paga'
+  recurring_rule_id: string | null
+  due_date: string | null
   created_at: string
   updated_at: string
 }

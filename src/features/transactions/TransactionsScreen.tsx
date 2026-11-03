@@ -156,6 +156,7 @@ export function TransactionsScreen({
     let income = 0
 
     for (const transaction of filtered) {
+      if (transaction.status !== 'paga') continue
       if (transaction.kind === 'despesa') expenses += transaction.amount_cents
       if (transaction.kind === 'rendimento') income += transaction.amount_cents
     }
@@ -362,6 +363,7 @@ export function TransactionsScreen({
                         <p className="truncate font-medium">{transaction.description}</p>
                         <p className="truncate text-sm text-slate-500 dark:text-slate-400">
                           {subtitle} · {timeLabel(transaction.occurred_at)}
+                        {transaction.status === 'prevista' ? ' · Prevista' : ''}
                         </p>
                       </div>
                       <p className={`shrink-0 tabular-nums font-medium ${amountClass(transaction.kind)}`}>

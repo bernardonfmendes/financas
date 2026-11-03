@@ -6,6 +6,7 @@ import { AuthScreen } from '../features/auth/AuthScreen'
 import { AccountsScreen } from '../features/accounts/AccountsScreen'
 import { HomeScreen } from '../features/dashboard/HomeScreen'
 import { TransactionsScreen } from '../features/transactions/TransactionsScreen'
+import { BudgetsScreen } from '../features/budgets/BudgetsScreen'
 
 /** Lê ?novo=1 (usado pelo atalho do iPhone) uma única vez, ao abrir a app. */
 function wantsQuickEntry(): boolean {
@@ -55,6 +56,7 @@ function AppContent() {
           />
         )}
         {active === 'contas' && <AccountsScreen />}
+        {active === 'orcamentos' && <BudgetsScreen />}
       </main>
       <BottomNav tabs={readyTabs} active={active} onSelect={setActive} />
     </div>
