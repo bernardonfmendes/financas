@@ -1,17 +1,20 @@
 import { useState } from 'react'
 import { formatEUR } from '../../lib/money'
+import { useAccounts } from '../accounts/useAccounts'
 import { useAuth } from '../auth/AuthProvider'
 
 export function HomeScreen() {
   const { user, signOut } = useAuth()
+  const { accounts, loading, error } = useAccounts()
   const [signingOut, setSigningOut] = useState(false)
   const [signOutError, setSignOutError] = useState<string | null>(null)
-  const totalBalance = 0
 
   const displayName =
     typeof user?.user_metadata?.display_name === 'string' && user.user_metadata.display_name
       ? user.user_metadata.display_name
       : user?.email ?? ''
+
+  const total = accounts.reduce((sum, account) => sum + account.opening_balance_cents, 0)
 
   async function handleSignOut() {
     setSignOutError(null)
@@ -49,11 +52,26 @@ export function HomeScreen() {
       )}
 
       <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-        <p className="text-sm text-slate-500 dark:text-slate-400">Saldo total</p>
-        <p className="mt-2 text-4xl font-semibold tabular-nums">{formatEUR(totalBalance)}</p>
-        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
-          Ainda não tens contas registadas.
+        <p className="text-sm text-slate-500 dark:text-slate-400">Total em contas</p>
+        <p className="mt-2 text-4xl font-semibold tabular-nums">
+          {loading ? '…' : formatEUR(total)}
         </p>
+
+        {error && (
+          <p role="alert" className="mt-4 text-sm text-red-600 dark:text-red-400">
+            {error}
+          </p>
+        )}
+
+        {!loading && !error && (
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+            {accounts.length === 0
+              ? 'Ainda não tens contas registadas.'
+              : accounts.length === 1
+                ? '1 conta registada.'
+                : `${accounts.length} contas registadas.`}
+          </p>
+        )}
       </div>
     </section>
   )

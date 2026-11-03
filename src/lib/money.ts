@@ -14,7 +14,7 @@ export function formatEUR(cents: Cents): string {
 
 /**
  * Converte texto introduzido pelo utilizador em cêntimos.
- * Aceita "12,50", "12.50", "12" e "1.250,00". Devolve null se o formato for inválido.
+ * Aceita "12,50", "12.50", "12", "-30" e "1.250,00". Devolve null se o formato for inválido.
  */
 export function parseEurToCents(input: string): Cents | null {
   let normalized = input.trim().replace(/\s/g, '')
@@ -23,9 +23,14 @@ export function parseEurToCents(input: string): Cents | null {
     normalized = normalized.replace(/\./g, '').replace(',', '.')
   }
 
-  if (!/^\d+(\.\d{1,2})?$/.test(normalized)) {
+  if (!/^-?\d+(\.\d{1,2})?$/.test(normalized)) {
     return null
   }
 
   return Math.round(Number(normalized) * 100)
+}
+
+/** Converte cêntimos num texto editável, no formato português (ex.: 1250 -> "12,50"). */
+export function centsToInput(cents: Cents): string {
+  return (cents / 100).toFixed(2).replace('.', ',')
 }
