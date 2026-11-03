@@ -5,7 +5,7 @@ import { useAuth } from '../auth/AuthProvider'
 
 export function HomeScreen() {
   const { user, signOut } = useAuth()
-  const { accounts, loading, error } = useAccounts()
+  const { accounts, balances, loading, error } = useAccounts()
   const [signingOut, setSigningOut] = useState(false)
   const [signOutError, setSignOutError] = useState<string | null>(null)
 
@@ -14,7 +14,7 @@ export function HomeScreen() {
       ? user.user_metadata.display_name
       : user?.email ?? ''
 
-  const total = accounts.reduce((sum, account) => sum + account.opening_balance_cents, 0)
+  const total = accounts.reduce((sum, account) => sum + (balances[account.id] ?? 0), 0)
 
   async function handleSignOut() {
     setSignOutError(null)

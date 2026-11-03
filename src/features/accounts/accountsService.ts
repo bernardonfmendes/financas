@@ -45,6 +45,24 @@ export async function fetchAccounts(): Promise<Account[]> {
   return (data ?? []) as Account[]
 }
 
+/** Saldo atual de cada conta (saldo inicial + movimentos), indexado pelo id da conta. */
+export async function fetchAccountBalances(): Promise<Record<string, number>> {
+  const { data, error } = await supabase.from('account_balances').select('account_id, balance_cents')
+
+  if (error) {
+    console.error(error)
+    throw new Error(LOAD_ERROR)
+  }
+
+  const balances: Record<string, number> = {}
+
+  for (const row of (data ?? []) as { account_id: string; balance_cents: number }[]) {
+    balances[row.account_id] = Number(row.balance_cents)
+  }
+
+  return balances
+}
+
 export async function createAccount(input: AccountInput): Promise<void> {
   const { error } = await supabase.from('accounts').insert(input)
 
@@ -68,6 +86,12 @@ export async function deleteAccount(id: string): Promise<void> {
 
   if (error) {
     console.error(error)
+
+    // 23503 = violação de chave estrangeira: a conta ainda tem movimentos associados.
+    if (error.code === '23503') {
+      throw new Error('Esta conta tem movimentos. Apaga primeiro os movimentos dela.')
+    }
+
     throw new Error(DELETE_ERROR)
   }
 }

@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from '../features/auth/AuthProvider'
 import { AuthScreen } from '../features/auth/AuthScreen'
 import { AccountsScreen } from '../features/accounts/AccountsScreen'
 import { HomeScreen } from '../features/dashboard/HomeScreen'
+import { TransactionsScreen } from '../features/transactions/TransactionsScreen'
 
 function AppContent() {
   const { user, loading } = useAuth()
@@ -29,6 +30,7 @@ function AppContent() {
     <div className="min-h-dvh bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <main className="mx-auto max-w-md px-5 pb-28 pt-12">
         {active === 'inicio' && <HomeScreen />}
+        {active === 'movimentos' && <TransactionsScreen />}
         {active === 'contas' && <AccountsScreen />}
       </main>
       <BottomNav tabs={readyTabs} active={active} onSelect={setActive} />

@@ -9,7 +9,7 @@ import { useAccounts } from './useAccounts'
 type Editing = Account | 'new' | null
 
 export function AccountsScreen() {
-  const { accounts, loading, error, reload } = useAccounts()
+  const { accounts, balances, loading, error, reload } = useAccounts()
   const [editing, setEditing] = useState<Editing>(null)
 
   if (editing !== null) {
@@ -32,7 +32,7 @@ export function AccountsScreen() {
     )
   }
 
-  const total = accounts.reduce((sum, account) => sum + account.opening_balance_cents, 0)
+  const total = accounts.reduce((sum, account) => sum + (balances[account.id] ?? 0), 0)
 
   return (
     <section aria-labelledby="titulo-contas" className="space-y-8">
@@ -52,7 +52,7 @@ export function AccountsScreen() {
       <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
         <p className="text-sm text-slate-500 dark:text-slate-400">Total em contas</p>
         <p className="mt-2 text-3xl font-semibold tabular-nums">{formatEUR(total)}</p>
-        <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">Soma dos saldos iniciais.</p>
+        <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">Soma dos saldos atuais.</p>
       </div>
 
       {loading && <p className="text-sm text-slate-500 dark:text-slate-400">A carregar…</p>}
@@ -82,7 +82,7 @@ export function AccountsScreen() {
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   {accountTypeLabel(account.account_type)}
                 </p>
-                <p className="mt-2 tabular-nums">{formatEUR(account.opening_balance_cents)}</p>
+                <p className="mt-2 tabular-nums">{formatEUR(balances[account.id] ?? 0)}</p>
               </button>
             </li>
           ))}

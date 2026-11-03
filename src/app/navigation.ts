@@ -12,7 +12,7 @@ export interface TabDefinition {
 
 export const TABS: TabDefinition[] = [
   { id: 'inicio', label: 'Início', icon: Home, ready: true },
-  { id: 'movimentos', label: 'Movimentos', icon: ArrowLeftRight, ready: false },
+  { id: 'movimentos', label: 'Movimentos', icon: ArrowLeftRight, ready: true },
   { id: 'contas', label: 'Contas', icon: Wallet, ready: true },
   { id: 'orcamentos', label: 'Orçamentos', icon: PieChart, ready: false },
   { id: 'mais', label: 'Mais', icon: MoreHorizontal, ready: false },

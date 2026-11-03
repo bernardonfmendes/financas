@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { fetchAccounts, type Account } from './accountsService'
+import { fetchAccountBalances, fetchAccounts, type Account } from './accountsService'
 
 export function useAccounts() {
   const [accounts, setAccounts] = useState<Account[]>([])
+  const [balances, setBalances] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -11,7 +12,9 @@ export function useAccounts() {
     setError(null)
 
     try {
-      setAccounts(await fetchAccounts())
+      const [accountList, balanceMap] = await Promise.all([fetchAccounts(), fetchAccountBalances()])
+      setAccounts(accountList)
+      setBalances(balanceMap)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocorreu um erro. Tenta novamente.')
     } finally {
@@ -23,5 +26,5 @@ export function useAccounts() {
     void load()
   }, [load])
 
-  return { accounts, loading, error, reload: load }
+  return { accounts, balances, loading, error, reload: load }
 }
