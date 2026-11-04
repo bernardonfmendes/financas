@@ -161,6 +161,7 @@ export function QuickEntry({ accounts, categories, onSaved, onAdvanced, onCancel
                     : 'bg-white text-slate-700 ring-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800'
                 }`}
               >
+                <span className="mr-1">{category.icon}</span>
                 {category.name}
               </button>
             )

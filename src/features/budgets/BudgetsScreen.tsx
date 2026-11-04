@@ -255,7 +255,7 @@ export function BudgetsScreen() {
                   className="w-full text-left"
                 >
                   <div className="flex items-center justify-between gap-4">
-                    <p className="font-medium">{category.name}</p>
+                    <p className="font-medium">{category.icon} {category.name}</p>
                     {budget ? (
                       <p className="shrink-0 text-sm tabular-nums text-slate-600 dark:text-slate-300">
                         {formatEUR(spent)} / {formatEUR(budget.amount_cents)}
