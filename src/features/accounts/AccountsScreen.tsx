@@ -1,16 +1,31 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { formatEUR } from '../../lib/money'
 import { accountTypeLabel } from './accountTypes'
 import { AccountForm } from './AccountForm'
 import { CategoriesSection } from './CategoriesSection'
 import type { Account } from './accountsService'
 import { useAccounts } from './useAccounts'
+import { FamilySection } from '../family/FamilySection'
+import { fetchHousehold, type Household } from '../family/familyService'
 
 type Editing = Account | 'new' | null
 
 export function AccountsScreen() {
   const { accounts, balances, loading, error, reload } = useAccounts()
   const [editing, setEditing] = useState<Editing>(null)
+  const [household, setHousehold] = useState<Household | null>(null)
+
+  const loadHousehold = useCallback(async () => {
+    try {
+      setHousehold(await fetchHousehold())
+    } catch {
+      setHousehold(null)
+    }
+  }, [])
+
+  useEffect(() => {
+    void loadHousehold()
+  }, [loadHousehold])
 
   if (editing !== null) {
     const isNew = editing === 'new'
@@ -22,6 +37,7 @@ export function AccountsScreen() {
         </h1>
         <AccountForm
           initial={editing === 'new' ? null : editing}
+          householdId={household?.id ?? null}
           onDone={() => {
             setEditing(null)
             void reload()
@@ -81,6 +97,7 @@ export function AccountsScreen() {
                 <p className="font-medium">{account.name}</p>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   {accountTypeLabel(account.account_type)}
+                  {account.household_id ? ' · Partilhada' : ''}
                 </p>
                 <p className="mt-2 tabular-nums">{formatEUR(balances[account.id] ?? 0)}</p>
               </button>
@@ -88,6 +105,8 @@ export function AccountsScreen() {
           ))}
         </ul>
       )}
+
+      <FamilySection household={household} onChanged={() => void loadHousehold()} />
 
       <CategoriesSection />
     </section>

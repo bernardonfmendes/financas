@@ -5,6 +5,8 @@ import { createAccount, deleteAccount, updateAccount, type Account } from './acc
 
 interface AccountFormProps {
   initial: Account | null
+  /** Grupo familiar do utilizador, ou null se ainda não tiver grupo. */
+  householdId: string | null
   onDone: () => void
   onCancel: () => void
 }
@@ -12,12 +14,13 @@ interface AccountFormProps {
 const inputClass =
   'mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-base outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 dark:border-slate-700 dark:bg-slate-900'
 
-export function AccountForm({ initial, onDone, onCancel }: AccountFormProps) {
+export function AccountForm({ initial, householdId, onDone, onCancel }: AccountFormProps) {
   const [name, setName] = useState(initial?.name ?? '')
   const [accountType, setAccountType] = useState<AccountType>(initial?.account_type ?? 'banco')
   const [balance, setBalance] = useState(
     initial ? centsToInput(initial.opening_balance_cents) : '0,00',
   )
+  const [shared, setShared] = useState(initial?.household_id != null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -41,6 +44,7 @@ export function AccountForm({ initial, onDone, onCancel }: AccountFormProps) {
       name: trimmedName,
       account_type: accountType,
       opening_balance_cents: cents,
+      household_id: shared && householdId ? householdId : null,
     }
 
     setBusy(true)
@@ -119,6 +123,16 @@ export function AccountForm({ initial, onDone, onCancel }: AccountFormProps) {
           className={inputClass}
         />
       </div>
+
+      {householdId && (
+        <label className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+          <input type="checkbox" checked={shared} onChange={(event) => setShared(event.target.checked)} className="h-5 w-5 accent-brand-600" />
+          <span className="text-sm">
+            <span className="block font-medium">Partilhar com a família</span>
+            <span className="text-slate-500 dark:text-slate-400">Todos os membros do grupo passam a ver esta conta e os seus movimentos.</span>
+          </span>
+        </label>
+      )}
 
       {error && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">

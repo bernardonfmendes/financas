@@ -9,6 +9,8 @@ export interface Account {
   name: string
   account_type: AccountType
   opening_balance_cents: number
+  /** Preenchido quando a conta é partilhada com o grupo familiar. */
+  household_id: string | null
   created_at: string
   updated_at: string
 }
@@ -25,6 +27,7 @@ export interface AccountInput {
   name: string
   account_type: AccountType
   opening_balance_cents: number
+  household_id: string | null
 }
 
 const LOAD_ERROR = 'Não foi possível carregar os dados. Tenta novamente.'
