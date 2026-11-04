@@ -127,6 +127,15 @@ export async function createCategory(name: string, kind: CategoryKind): Promise<
   }
 }
 
+export async function renameCategory(id: string, name: string): Promise<void> {
+  const { error } = await supabase.from('categories').update({ name }).eq('id', id)
+
+  if (error) {
+    console.error(error)
+    throw new Error(SAVE_ERROR)
+  }
+}
+
 export async function deleteCategory(id: string): Promise<void> {
   const { error } = await supabase.from('categories').delete().eq('id', id)
 
