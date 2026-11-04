@@ -25,6 +25,8 @@ export interface Category {
   icon: string
   /** Ordem escolhida pelo utilizador (menor aparece primeiro). */
   sort_order: number
+  /** Verdadeiro se a categoria é da conta que está a usar a app (só essas se editam ou apagam). */
+  editable: boolean
 }
 
 const DEFAULT_ICONS: Record<string, string> = {
@@ -128,10 +130,12 @@ interface CategoryPreference {
 }
 
 export async function fetchCategories(): Promise<Category[]> {
-  const [categoriesResult, preferencesResult] = await Promise.all([
+  const [categoriesResult, preferencesResult, userResult] = await Promise.all([
     supabase.from('categories').select('*').order('name', { ascending: true }),
     supabase.from('category_preferences').select('category_id, icon, sort_order'),
+    supabase.auth.getUser(),
   ])
+  const currentUserId = userResult.data.user?.id ?? null
 
   if (categoriesResult.error || preferencesResult.error) {
     console.error(categoriesResult.error ?? preferencesResult.error)
@@ -150,6 +154,7 @@ export async function fetchCategories(): Promise<Category[]> {
         icon: pref?.icon ?? defaultIcon(category.name),
         // Sem ordem guardada, as categorias ficam por ordem alfabética depois das que têm ordem.
         sort_order: pref?.sort_order ?? 1000 + index,
+        editable: category.owner_id !== null && category.owner_id === currentUserId,
       }
     })
 

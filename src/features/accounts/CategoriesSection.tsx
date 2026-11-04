@@ -70,7 +70,7 @@ export function CategoriesSection() {
     if (!editing) return
 
     const trimmed = editName.trim()
-    const isCustom = editing.owner_id !== null
+    const isCustom = editing.editable
 
     if (isCustom && !trimmed) {
       setError('Indica um nome para a categoria.')
@@ -170,7 +170,7 @@ export function CategoriesSection() {
         <form onSubmit={handleSaveEdit} className="space-y-4 rounded-3xl bg-white p-5 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800" noValidate>
           <p className="text-sm font-medium">Editar {KIND_LABELS[editing.kind].toLowerCase()}</p>
 
-          {editing.owner_id !== null && (
+          {editing.editable && (
             <div>
               <label htmlFor="categoria-editar" className="text-sm font-medium">Nome</label>
               <input id="categoria-editar" type="text" maxLength={60} value={editName} onChange={(event) => setEditName(event.target.value)} className={inputClass} />
@@ -220,7 +220,6 @@ export function CategoriesSection() {
                     <span className="block truncate font-medium">{category.name}</span>
                     <span className="block text-xs text-slate-500 dark:text-slate-400">
                       {KIND_LABELS[category.kind]}
-                      {category.owner_id === null ? ' · predefinida' : ''}
                     </span>
                   </span>
                 </button>
@@ -233,7 +232,7 @@ export function CategoriesSection() {
 
             return (
               <li key={category.id}>
-                {category.owner_id !== null ? (
+                {category.editable ? (
                   <SwipeableRow onSwipeLeft={() => void handleDelete(category)} onSwipeRight={() => startEditing(category)}>
                     {row}
                   </SwipeableRow>
