@@ -15,6 +15,10 @@ create table public.household_members (
   primary key (household_id, user_id)
 );
 
+-- A coluna tem de existir antes das funções que a usam.
+alter table public.accounts
+  add column household_id uuid references public.households(id) on delete set null;
+
 alter table public.households enable row level security;
 alter table public.household_members enable row level security;
 
@@ -124,9 +128,6 @@ create policy profiles_select_household on public.profiles for select
     join public.household_members other on other.household_id = me.household_id
     where me.user_id = auth.uid() and other.user_id = profiles.id
   ));
-
-alter table public.accounts
-  add column household_id uuid references public.households(id) on delete set null;
 
 drop policy accounts_select_own on public.accounts;
 drop policy accounts_insert_own on public.accounts;
