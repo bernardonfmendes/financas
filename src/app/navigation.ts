@@ -1,6 +1,6 @@
-import { ArrowLeftRight, Home, MoreHorizontal, PieChart, Wallet, type LucideIcon } from 'lucide-react'
+import { ArrowLeftRight, BarChart3, Home, PieChart, Wallet, type LucideIcon } from 'lucide-react'
 
-export type TabId = 'inicio' | 'movimentos' | 'contas' | 'orcamentos' | 'mais'
+export type TabId = 'inicio' | 'movimentos' | 'contas' | 'orcamentos' | 'relatorios'
 
 export interface TabDefinition {
   id: TabId
@@ -15,5 +15,5 @@ export const TABS: TabDefinition[] = [
   { id: 'movimentos', label: 'Movimentos', icon: ArrowLeftRight, ready: true },
   { id: 'contas', label: 'Contas', icon: Wallet, ready: true },
   { id: 'orcamentos', label: 'Orçamentos', icon: PieChart, ready: true },
-  { id: 'mais', label: 'Mais', icon: MoreHorizontal, ready: false },
+  { id: 'relatorios', label: 'Relatórios', icon: BarChart3, ready: true },
 ]

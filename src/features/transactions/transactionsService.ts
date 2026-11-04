@@ -65,6 +65,32 @@ export async function fetchTransactions(): Promise<Transaction[]> {
   return (data ?? []) as Transaction[]
 }
 
+/** Lê todos os movimentos, em páginas de 1000 (limite por pedido do Supabase). Usado nos relatórios. */
+export async function fetchAllTransactions(): Promise<Transaction[]> {
+  const pageSize = 1000
+  const all: Transaction[] = []
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('*')
+      .order('occurred_at', { ascending: false })
+      .range(from, from + pageSize - 1)
+
+    if (error) {
+      console.error(error)
+      throw new Error(LOAD_ERROR)
+    }
+
+    const page = (data ?? []) as Transaction[]
+    all.push(...page)
+
+    if (page.length < pageSize) break
+  }
+
+  return all
+}
+
 export async function createTransaction(input: TransactionInput): Promise<void> {
   const { error } = await supabase.from('transactions').insert(input)
 
