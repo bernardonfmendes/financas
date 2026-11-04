@@ -97,7 +97,7 @@ export function RelatoriosScreen() {
     try {
       if (kind === 'csv') {
         const blob = buildCsv(list, accountNames, categoryNames)
-        await shareOrDownload(blob, `financas-${period}.csv`, 'text/csv', 'Movimentos')
+        await shareOrDownload(blob, `finora-${period}.csv`, 'text/csv', 'Movimentos')
       } else {
         const data: ReportData = {
           periodLabel: range.label,
@@ -114,7 +114,7 @@ export function RelatoriosScreen() {
           years,
         }
         const blob = buildPdf(data)
-        await shareOrDownload(blob, `relatorio-financas-${period}.pdf`, 'application/pdf', 'Relatório financeiro')
+        await shareOrDownload(blob, `relatorio-finora-${period}.pdf`, 'application/pdf', 'Relatório financeiro')
       }
     } catch (err) {
       setError(messageOf(err))

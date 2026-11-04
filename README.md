@@ -1,4 +1,6 @@
-# Finanças
+# Finora
+
+Controla · Organiza · Poupa
 
 Aplicação pessoal de gestão financeira, para uso privado (PWA para iPhone).
 

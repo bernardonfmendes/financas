@@ -33,7 +33,7 @@ export function HomeScreen() {
         <div>
           <p className="text-sm text-slate-500 dark:text-slate-400">Olá, {displayName}</p>
           <h1 id="titulo-inicio" className="mt-1 text-3xl font-semibold tracking-tight">
-            Finanças
+            Finora
           </h1>
         </div>
         <button

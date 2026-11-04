@@ -50,7 +50,7 @@ export function AuthScreen() {
     <section aria-labelledby="titulo-autenticacao" className="space-y-8">
       <header>
         <h1 id="titulo-autenticacao" className="text-3xl font-semibold tracking-tight">
-          Finanças
+          Finora
         </h1>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           {isCreating ? 'Cria a tua conta para começar.' : 'Entra na tua conta.'}
